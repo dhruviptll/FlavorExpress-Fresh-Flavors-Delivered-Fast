@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – FlavorExpress</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .auth-page {
+      min-height: calc(100vh - 72px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+
+    /* Left: branding panel */
+    .auth-brand {
+      background: linear-gradient(145deg, var(--dark) 0%, #3d1f0a 100%);
+      padding: 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-brand::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(232,97,10,0.15) 0%, transparent 70%);
+      top: -100px; left: -100px;
+    }
+    .auth-brand::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(232,97,10,0.1) 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+    }
+    .brand-content { position: relative; z-index: 1; }
+    .brand-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 3rem; }
+    .brand-logo .logo-icon { width: 48px; height: 48px; border-radius: 14px; background: var(--orange); display: grid; place-items: center; font-size: 22px; box-shadow: 0 8px 20px rgba(232,97,10,0.4); }
+    .brand-logo span { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 800; color: white; }
+
+    .brand-content h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 3vw, 2.8rem);
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 1.2rem;
+    }
+    .brand-content h1 em { color: var(--orange); font-style: italic; }
+    .brand-content p { color: #9a8878; font-size: 1rem; line-height: 1.7; margin-bottom: 2.5rem; }
+
+    .brand-features { display: flex; flex-direction: column; gap: 1rem; }
+    .brand-feat {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: #c0a898;
+    }
+    .brand-feat-icon {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,0.06);
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .brand-testimonial {
+      margin-top: 3rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .brand-testimonial p { color: #c0a898; font-size: 0.9rem; font-style: italic; margin-bottom: 1rem; }
+    .testimonial-author { display: flex; align-items: center; gap: 10px; }
+    .t-avatar { width: 36px; height: 36px; background: var(--orange); border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: white; font-size: 0.9rem; }
+    .t-name { font-size: 0.85rem; font-weight: 700; color: white; }
+    .t-role { font-size: 0.75rem; color: #9a8878; }
+
+    /* Right: auth form */
+    .auth-form-wrap {
+      background: var(--cream);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 4rem;
+    }
+    .auth-form-inner { width: 100%; max-width: 420px; }
+
+    /* Tab switcher */
+    .auth-tabs {
+      display: flex;
+      background: white;
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 2rem;
+      border: 1px solid #f0e8e0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 0.7rem;
+      border-radius: 10px;
+      border: none;
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .auth-tab.active {
+      background: var(--orange);
+      color: white;
+      box-shadow: 0 4px 12px rgba(232,97,10,0.3);
+    }
+
+    .auth-section { display: none; }
+    .auth-section.active { display: block; }
+
+    .auth-section h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 800; color: var(--dark); margin-bottom: 0.4rem; }
+    .auth-section > p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+
+    /* Social login */
+    .social-btns { display: flex; gap: 0.8rem; margin-bottom: 1.5rem; }
+    .social-btn {
+      flex: 1;
+      padding: 0.75rem;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--dark);
+    }
+    .social-btn:hover { border-color: var(--orange); background: var(--orange-pale); }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .divider::before, .divider::after { content:''; flex:1; height:1px; background:#eee; }
+    .divider span { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; white-space: nowrap; }
+
+    /* Password input with eye toggle */
+    .pass-wrap { position: relative; }
+    .pass-wrap input { padding-right: 3rem; }
+    .eye-btn {
+      position: absolute;
+      right: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+    .eye-btn:hover { color: var(--orange); }
+
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 0.82rem;
+      color: var(--orange);
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: -0.8rem;
+      margin-bottom: 1rem;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+
+    .strength-bar {
+      height: 4px;
+      background: #eee;
+      border-radius: 4px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .strength-fill { height: 100%; border-radius: 4px; transition: width 0.3s, background 0.3s; }
+    .strength-label { font-size: 0.75rem; font-weight: 600; margin-top: 3px; }
+
+    .auth-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--orange);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 6px 16px rgba(232,97,10,0.3);
+      margin-top: 0.5rem;
+    }
+    .auth-submit:hover { background: #c94f00; transform: translateY(-2px); }
+
+    .switch-link {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+    .switch-link a { color: var(--orange); font-weight: 700; text-decoration: none; }
+    .switch-link a:hover { text-decoration: underline; }
+
+    /* Success toast */
+    .toast {
+      display: none;
+      position: fixed;
+      bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--dark);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      z-index: 3000;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      animation: slideUp 0.3s ease;
+    }
+    .toast.show { display: block; }
+    @keyframes slideUp { from{transform:translateX(-50%) translateY(20px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
+
+    @media(max-width:900px){ .auth-page{grid-template-columns:1fr;} .auth-brand{display:none;} .auth-form-wrap{padding:3rem 2rem;} }
+    @media(max-width:480px){ .auth-form-wrap{padding:2rem 1.5rem;} }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo"><div class="logo-icon">🍽️</div><span>FlavorExpress</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="restaurant.html">Menu</a></li>
+    <li><a href="tracking.html">Track</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="login.html" class="nav-cta active">Sign In</a></li>
+  </ul>
+</nav>
+
+<div class="auth-page">
+
+  <!-- LEFT: Brand panel -->
+  <div class="auth-brand">
+    <div class="brand-content">
+      <div class="brand-logo">
+        <div class="logo-icon">🍽️</div>
+        <span>FlavorExpress</span>
+      </div>
+      <h1>Your favorite food,<br><em>delivered fast</em></h1>
+      <p>Join 50,000+ food lovers who enjoy fresh, hot meals delivered to their doorstep every day.</p>
+      <div class="brand-features">
+        <div class="brand-feat"><div class="brand-feat-icon">⚡</div>30-min average delivery</div>
+        <div class="brand-feat"><div class="brand-feat-icon">🍽️</div>200+ restaurant partners</div>
+        <div class="brand-feat"><div class="brand-feat-icon">💳</div>Secure & instant payments</div>
+        <div class="brand-feat"><div class="brand-feat-icon">🔒</div>Bank-grade security</div>
+      </div>
+      <div class="brand-testimonial">
+        <p>"FlavorExpress changed how I eat. Fresh food, on time, every single day!"</p>
+        <div class="testimonial-author">
+          <div class="t-avatar">P</div>
+          <div><div class="t-name">Priya Sharma</div><div class="t-role">Regular customer · Ahmedabad ★★★★★</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Form -->
+  <div class="auth-form-wrap">
+    <div class="auth-form-inner">
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" onclick="switchTab('register')">Create Account</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="auth-section active" id="loginSection">
+        <h2>Welcome back!</h2>
+        <p>Sign in to your account to continue ordering.</p>
+
+        <div class="social-btns">
+          <button class="social-btn" onclick="socialLogin('Google')">
+            <img src="https://www.google.com/favicon.ico" width="16" alt="G"> Google
+          </button>
+          <button class="social-btn" onclick="socialLogin('Facebook')">
+            <i class="fab fa-facebook-f" style="color:#1877f2"></i> Facebook
+          </button>
+        </div>
+        <div class="divider"><span>or sign in with email</span></div>
+
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="loginEmail" placeholder="priya@example.com">
+          <span class="error-msg" id="loginEmailErr"></span>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="pass-wrap">
+            <input type="password" id="loginPass" placeholder="Enter your password">
+            <button class="eye-btn" onclick="togglePass('loginPass',this)"><i class="fas fa-eye"></i></button>
+          </div>
+          <span class="error-msg" id="loginPassErr"></span>
+        </div>
+        <a href="#" class="forgot-link">Forgot password?</a>
+
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem">
+          <input type="checkbox" id="rememberMe" style="accent-color:var(--orange);width:16px;height:16px">
+          <label for="rememberMe" style="font-size:0.88rem;font-weight:normal;color:var(--text-muted);cursor:pointer">Remember me for 30 days</label>
+        </div>
+
+        <button class="auth-submit" onclick="login()">Sign In <i class="fas fa-arrow-right"></i></button>
+        <div class="switch-link">Don't have an account? <a onclick="switchTab('register')">Create one free</a></div>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="auth-section" id="registerSection">
+        <h2>Create your account</h2>
+        <p>Join thousands of happy food lovers today.</p>
+
+        <div class="social-btns">
+          <button class="social-btn" onclick="socialLogin('Google')">
+            <img src="https://www.google.com/favicon.ico" width="16" alt="G"> Google
+          </button>
+          <button class="social-btn" onclick="socialLogin('Facebook')">
+            <i class="fab fa-facebook-f" style="color:#1877f2"></i> Facebook
+          </button>
+        </div>
+        <div class="divider"><span>or register with email</span></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="regFirst" placeholder="Priya">
+            <span class="error-msg" id="regFirstErr"></span>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="regLast" placeholder="Sharma">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="regEmail" placeholder="priya@example.com">
+          <span class="error-msg" id="regEmailErr"></span>
+        </div>
+        <div class="form-group">
+          <label>Mobile Number</label>
+          <input type="tel" id="regMobile" placeholder="+91 98765 43210">
+          <span class="error-msg" id="regMobileErr"></span>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="pass-wrap">
+            <input type="password" id="regPass" placeholder="Min 8 characters" oninput="checkStrength(this)">
+            <button class="eye-btn" onclick="togglePass('regPass',this)"><i class="fas fa-eye"></i></button>
+          </div>
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill" style="width:0"></div></div>
+          <div class="strength-label" id="strengthLabel"></div>
+          <span class="error-msg" id="regPassErr"></span>
+        </div>
+        <div class="form-group">
+          <label>Confirm Password</label>
+          <div class="pass-wrap">
+            <input type="password" id="regConfirm" placeholder="Re-enter password">
+            <button class="eye-btn" onclick="togglePass('regConfirm',this)"><i class="fas fa-eye"></i></button>
+          </div>
+          <span class="error-msg" id="regConfirmErr"></span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:1rem">
+          <input type="checkbox" id="terms" style="accent-color:var(--orange);width:16px;height:16px;margin-top:2px">
+          <label for="terms" style="font-size:0.82rem;font-weight:normal;color:var(--text-muted);cursor:pointer;line-height:1.5">
+            I agree to the <a href="#" style="color:var(--orange)">Terms of Service</a> and <a href="#" style="color:var(--orange)">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button class="auth-submit" onclick="register()">Create My Account <i class="fas fa-arrow-right"></i></button>
+        <div class="switch-link">Already have an account? <a onclick="switchTab('login')">Sign in</a></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Logged in successfully! Redirecting…</div>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='login')||(i===1&&tab==='register')));
+  document.getElementById('loginSection').classList.toggle('active', tab === 'login');
+  document.getElementById('registerSection').classList.toggle('active', tab === 'register');
+}
+
+function togglePass(id, btn) {
+  const inp = document.getElementById(id);
+  const isPass = inp.type === 'password';
+  inp.type = isPass ? 'text' : 'password';
+  btn.innerHTML = isPass ? '<i class="fas fa-eye-slash"></i>' : '<i class="fas fa-eye"></i>';
+}
+
+function checkStrength(inp) {
+  const val = inp.value;
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const fill = document.getElementById('strengthFill');
+  const label = document.getElementById('strengthLabel');
+  const levels = [
+    {w:'0%',c:'#eee',t:''},
+    {w:'25%',c:'#ef4444',t:'Weak'},
+    {w:'50%',c:'#f97316',t:'Fair'},
+    {w:'75%',c:'#facc15',t:'Good'},
+    {w:'100%',c:'#22c55e',t:'Strong 💪'},
+  ];
+  const lvl = levels[score] || levels[0];
+  fill.style.width = lvl.w;
+  fill.style.background = lvl.c;
+  label.textContent = lvl.t;
+  label.style.color = lvl.c;
+}
+
+function login() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  let ok = true;
+  document.getElementById('loginEmailErr').textContent = '';
+  document.getElementById('loginPassErr').textContent = '';
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('loginEmailErr').textContent = 'Enter a valid email address.'; ok = false; }
+  if (!pass || pass.length < 6) { document.getElementById('loginPassErr').textContent = 'Password must be at least 6 characters.'; ok = false; }
+  if (ok) showToast('✅ Login successful! Welcome back!', () => window.location.href = 'index.html');
+}
+
+function register() {
+  const first = document.getElementById('regFirst').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const mob = document.getElementById('regMobile').value.trim();
+  const pass = document.getElementById('regPass').value;
+  const confirm = document.getElementById('regConfirm').value;
+  const agreed = document.getElementById('terms').checked;
+  let ok = true;
+  ['regFirstErr','regEmailErr','regMobileErr','regPassErr','regConfirmErr'].forEach(id => document.getElementById(id).textContent = '');
+  if (!first) { document.getElementById('regFirstErr').textContent = 'First name is required.'; ok = false; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('regEmailErr').textContent = 'Enter a valid email.'; ok = false; }
+  if (!mob || mob.replace(/\D/g,'').length < 10) { document.getElementById('regMobileErr').textContent = 'Enter a valid 10-digit number.'; ok = false; }
+  if (pass.length < 8) { document.getElementById('regPassErr').textContent = 'Password must be at least 8 characters.'; ok = false; }
+  if (pass !== confirm) { document.getElementById('regConfirmErr').textContent = 'Passwords do not match.'; ok = false; }
+  if (!agreed) { alert('Please accept the Terms of Service to continue.'); ok = false; }
+  if (ok) showToast('🎉 Account created! Welcome to FlavorExpress!', () => window.location.href = 'index.html');
+}
+
+function socialLogin(provider) {
+  showToast(`✅ Signed in with ${provider}!`, () => window.location.href = 'index.html');
+}
+
+function showToast(msg, cb) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => { toast.classList.remove('show'); if(cb) setTimeout(cb, 300); }, 2500);
+}
+</script>
+</body>
+</html>

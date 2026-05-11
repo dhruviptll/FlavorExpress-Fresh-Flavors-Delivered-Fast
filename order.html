@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Online – FlavorExpress</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .order-page {
+      min-height: calc(100vh - 72px);
+      background: linear-gradient(135deg, #fff4ec 0%, var(--cream) 60%);
+      padding: 4rem 5%;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    /* Left — form panel */
+    .order-panel {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      border: 1px solid #f0e8e0;
+      box-shadow: var(--shadow);
+    }
+    .panel-header { margin-bottom: 2rem; }
+    .panel-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--dark);
+    }
+    .panel-header p { color: var(--text-muted); margin-top: 0.4rem; font-size: 0.95rem; }
+
+    .step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 2.5rem;
+    }
+    .step-dot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      position: relative;
+    }
+    .step-dot .dot {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      background: #eee;
+      color: #aaa;
+      transition: var(--transition);
+      z-index: 1;
+    }
+    .step-dot.active .dot { background: var(--orange); color: white; box-shadow: 0 4px 12px rgba(232,97,10,0.35); }
+    .step-dot.done .dot { background: #16a34a; color: white; }
+    .step-dot .label { font-size: 0.72rem; font-weight: 600; color: #aaa; }
+    .step-dot.active .label { color: var(--orange); }
+    .step-line {
+      flex: 1;
+      height: 2px;
+      background: #eee;
+      margin-bottom: 20px;
+      transition: var(--transition);
+    }
+    .step-line.done { background: var(--orange); }
+
+    .form-section { display: none; }
+    .form-section.active { display: block; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .food-select-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.7rem;
+      margin-top: 0.4rem;
+    }
+    .food-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.7rem 1rem;
+      border: 2px solid #eee;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .food-option:hover { border-color: var(--orange); background: var(--orange-pale); }
+    .food-option input { accent-color: var(--orange); width: 16px; height: 16px; }
+    .food-option.selected { border-color: var(--orange); background: var(--orange-pale); color: var(--orange); }
+
+    .nav-btns { display: flex; gap: 1rem; margin-top: 2rem; }
+    .btn-back {
+      flex: 1;
+      padding: 0.9rem;
+      border-radius: 12px;
+      border: 2px solid #eee;
+      background: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .btn-back:hover { border-color: var(--orange); color: var(--orange); }
+    .btn-next {
+      flex: 2;
+      padding: 0.9rem;
+      border-radius: 12px;
+      border: none;
+      background: var(--orange);
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 6px 16px rgba(232,97,10,0.3);
+    }
+    .btn-next:hover { background: #c94f00; transform: translateY(-2px); }
+
+    /* Right — order summary */
+    .order-summary {
+      position: sticky;
+      top: 90px;
+    }
+    .summary-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid #f0e8e0;
+      box-shadow: var(--shadow);
+      margin-bottom: 1.5rem;
+    }
+    .summary-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 1.4rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid #f0e8e0;
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8rem;
+      font-size: 0.9rem;
+    }
+    .summary-item .name { color: var(--text-muted); }
+    .summary-item .price { font-weight: 700; color: var(--dark); }
+    .summary-divider { border: none; border-top: 1px dashed #f0e8e0; margin: 1rem 0; }
+    .summary-total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--dark);
+    }
+    .summary-total .total-price { color: var(--orange); }
+
+    .promo-input {
+      display: flex;
+      gap: 0.6rem;
+      margin-top: 1rem;
+    }
+    .promo-input input {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      border: 2px solid #eee;
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .promo-input input:focus { border-color: var(--orange); }
+    .promo-input button {
+      padding: 0.7rem 1.2rem;
+      background: var(--orange-pale);
+      border: 2px solid var(--border);
+      color: var(--orange);
+      font-weight: 700;
+      font-size: 0.85rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'DM Sans', sans-serif;
+    }
+    .promo-input button:hover { background: var(--orange); color: white; border-color: var(--orange); }
+
+    .trust-badges {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+    }
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .trust-badge i { color: var(--orange); }
+
+    /* Success overlay */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 2000;
+      place-items: center;
+    }
+    .success-overlay.show { display: grid; }
+    .success-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 3rem 2.5rem;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .success-box h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--dark); margin-bottom: 0.6rem; }
+    .success-box p { color: var(--text-muted); margin-bottom: 2rem; }
+
+    @media(max-width:900px){ .order-page{grid-template-columns:1fr;} .order-summary{position:relative;top:0;} }
+    @media(max-width:500px){ .form-row{grid-template-columns:1fr;} .food-select-grid{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo"><div class="logo-icon">🍽️</div><span>FlavorExpress</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="restaurant.html">Menu</a></li>
+    <li><a href="tracking.html">Track</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="login.html" class="nav-cta">Sign In</a></li>
+  </ul>
+</nav>
+
+<div class="order-page">
+
+  <!-- LEFT: Order Form -->
+  <div class="order-panel">
+    <div class="panel-header">
+      <h2>Place Your Order</h2>
+      <p>Fill in your details and we'll get it to you in under 30 minutes.</p>
+    </div>
+
+    <!-- Step Indicator -->
+    <div class="step-indicator">
+      <div class="step-dot active" id="sdot1"><div class="dot">1</div><span class="label">Details</span></div>
+      <div class="step-line" id="sline1"></div>
+      <div class="step-dot" id="sdot2"><div class="dot">2</div><span class="label">Food</span></div>
+      <div class="step-line" id="sline2"></div>
+      <div class="step-dot" id="sdot3"><div class="dot">3</div><span class="label">Confirm</span></div>
+    </div>
+
+    <!-- Step 1: Personal Info -->
+    <div class="form-section active" id="step1">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name *</label>
+          <input type="text" id="fname" placeholder="Priya Sharma">
+          <span class="error-msg" id="fnameErr"></span>
+        </div>
+        <div class="form-group">
+          <label>Mobile Number *</label>
+          <input type="tel" id="fmobile" placeholder="+91 98765 43210" maxlength="13">
+          <span class="error-msg" id="fmobileErr"></span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Email Address *</label>
+        <input type="email" id="femail" placeholder="priya@example.com">
+        <span class="error-msg" id="femailErr"></span>
+      </div>
+      <div class="form-group">
+        <label>Delivery Address *</label>
+        <textarea id="faddress" placeholder="Flat 4B, Sunrise Apartments, Ring Road, Ahmedabad – 380001"></textarea>
+        <span class="error-msg" id="faddrErr"></span>
+      </div>
+      <div class="nav-btns">
+        <button class="btn-next" onclick="goStep(2)">Continue to Food Selection <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Step 2: Food Selection -->
+    <div class="form-section" id="step2">
+      <div class="form-group">
+        <label>Select your items *</label>
+        <div class="food-select-grid">
+          <label class="food-option"><input type="checkbox" value="Margherita Pizza ₹199"> 🍕 Margherita Pizza</label>
+          <label class="food-option"><input type="checkbox" value="Classic Burger ₹99"> 🍔 Classic Burger</label>
+          <label class="food-option"><input type="checkbox" value="Creamy Pasta ₹149"> 🍝 Creamy Pasta</label>
+          <label class="food-option"><input type="checkbox" value="Masala Dosa ₹120"> 🥞 Masala Dosa</label>
+          <label class="food-option"><input type="checkbox" value="Chocolate Cake ₹139"> 🎂 Chocolate Cake</label>
+          <label class="food-option"><input type="checkbox" value="Club Sandwich ₹119"> 🥪 Club Sandwich</label>
+          <label class="food-option"><input type="checkbox" value="Vadapav ₹49"> 🍞 Vadapav</label>
+          <label class="food-option"><input type="checkbox" value="Indian Thali ₹249"> 🍛 Indian Thali</label>
+        </div>
+        <span class="error-msg" id="ffoodErr"></span>
+      </div>
+      <div class="form-group">
+        <label>Special Instructions (optional)</label>
+        <textarea id="fnotes" placeholder="Extra spicy, no onions, extra chutney…" style="min-height:80px"></textarea>
+      </div>
+      <div class="nav-btns">
+        <button class="btn-back" onclick="goStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn-next" onclick="goStep(3)">Review Order <i class="fas fa-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- Step 3: Confirm -->
+    <div class="form-section" id="step3">
+      <div id="orderReview" style="margin-bottom:1.5rem;"></div>
+      <div class="form-group">
+        <label>Payment Method</label>
+        <select id="fpay">
+          <option value="">Choose payment…</option>
+          <option value="PhonePe">📱 PhonePe</option>
+          <option value="GPay">💳 Google Pay</option>
+          <option value="UPI">🏦 UPI ID</option>
+          <option value="COD">🚚 Cash on Delivery</option>
+        </select>
+        <span class="error-msg" id="fpayErr"></span>
+      </div>
+      <div class="nav-btns">
+        <button class="btn-back" onclick="goStep(2)"><i class="fas fa-arrow-left"></i> Back</button>
+        <button class="btn-next" onclick="placeOrder()">🎉 Place Order</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Summary -->
+  <div class="order-summary">
+    <div class="summary-card">
+      <h3>🛒 Order Summary</h3>
+      <div class="summary-item"><span class="name">Delivery fee</span><span class="price" style="color:#16a34a">FREE</span></div>
+      <div class="summary-item"><span class="name">Platform fee</span><span class="price">₹5</span></div>
+      <div class="summary-item"><span class="name">GST (5%)</span><span class="price" id="gstDisplay">₹0</span></div>
+      <hr class="summary-divider">
+      <div class="summary-total"><span>Total</span><span class="total-price" id="totalDisplay">₹5</span></div>
+      <div class="promo-input">
+        <input type="text" id="promoCode" placeholder="Promo code">
+        <button onclick="applyPromo()">Apply</button>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <h3>📍 Delivery Info</h3>
+      <div class="summary-item"><span class="name"><i class="fas fa-clock"></i> Est. delivery</span><span class="price">25–30 min</span></div>
+      <div class="summary-item"><span class="name"><i class="fas fa-map-marker-alt"></i> Coverage</span><span class="price">200+ cities</span></div>
+    </div>
+
+    <div class="summary-card">
+      <h3>🔒 Safe & Secure</h3>
+      <div class="trust-badges">
+        <div class="trust-badge"><i class="fas fa-shield-alt"></i> Secure payments</div>
+        <div class="trust-badge"><i class="fas fa-undo"></i> Easy refunds</div>
+        <div class="trust-badge"><i class="fas fa-headset"></i> 24/7 support</div>
+        <div class="trust-badge"><i class="fas fa-star"></i> 4.8★ rating</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon">🎉</div>
+    <h2>Order Placed!</h2>
+    <p>Your delicious meal is being prepared. You'll receive a confirmation shortly.</p>
+    <a href="tracking.html" class="btn-primary" style="display:inline-flex;margin-bottom:0.8rem">
+      Track My Order <i class="fas fa-arrow-right"></i>
+    </a><br>
+    <a href="index.html" style="font-size:0.9rem;color:var(--text-muted);text-decoration:none;">← Back to Home</a>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand"><a href="index.html" class="nav-logo"><div class="logo-icon">🍽️</div><span>FlavorExpress</span></a><p>Fresh flavors, delivered fast.</p></div>
+    <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="index.html">Home</a></li><li><a href="restaurant.html">Menu</a></li><li><a href="tracking.html">Track Order</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="feedback.html">Feedback</a></li><li><a href="login.html">Login</a></li></ul></div>
+    <div class="footer-col"><h4>Company</h4><ul><li><a href="about.html">About</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 FlavorExpress. All rights reserved.</p></div>
+</footer>
+
+<script>
+let currentStep = 1;
+
+function goStep(n) {
+  if (n > currentStep && !validateStep(currentStep)) return;
+
+  document.getElementById('step' + currentStep).classList.remove('active');
+  document.getElementById('sdot' + currentStep).classList.remove('active');
+  document.getElementById('sdot' + currentStep).classList.add('done');
+
+  if (n < currentStep) {
+    document.getElementById('sdot' + currentStep).classList.remove('done');
+    document.getElementById('sdot' + n).classList.remove('done');
+  }
+  if (currentStep < 3) document.getElementById('sline' + currentStep).classList.add('done');
+  if (n < currentStep && currentStep > 1) document.getElementById('sline' + (currentStep-1)).classList.remove('done');
+
+  currentStep = n;
+  document.getElementById('step' + n).classList.add('active');
+  document.getElementById('sdot' + n).classList.add('active');
+  document.getElementById('sdot' + n).classList.remove('done');
+
+  if (n === 3) buildReview();
+}
+
+function validateStep(s) {
+  if (s === 1) {
+    let ok = true;
+    const name = document.getElementById('fname').value.trim();
+    const mob = document.getElementById('fmobile').value.trim();
+    const email = document.getElementById('femail').value.trim();
+    const addr = document.getElementById('faddress').value.trim();
+    document.getElementById('fnameErr').textContent = '';
+    document.getElementById('fmobileErr').textContent = '';
+    document.getElementById('femailErr').textContent = '';
+    document.getElementById('faddrErr').textContent = '';
+    if (!name) { document.getElementById('fnameErr').textContent = 'Name is required.'; ok = false; }
+    if (!mob || mob.replace(/\D/g,'').length < 10) { document.getElementById('fmobileErr').textContent = 'Enter a valid 10-digit mobile number.'; ok = false; }
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { document.getElementById('femailErr').textContent = 'Enter a valid email address.'; ok = false; }
+    if (!addr) { document.getElementById('faddrErr').textContent = 'Delivery address is required.'; ok = false; }
+    return ok;
+  }
+  if (s === 2) {
+    const checked = document.querySelectorAll('.food-select-grid input:checked');
+    if (checked.length === 0) { document.getElementById('ffoodErr').textContent = 'Please select at least one item.'; return false; }
+    document.getElementById('ffoodErr').textContent = '';
+    updateTotal();
+    return true;
+  }
+  return true;
+}
+
+function buildReview() {
+  const items = [...document.querySelectorAll('.food-select-grid input:checked')].map(i => i.value);
+  let html = `<div style="background:var(--orange-pale);border-radius:14px;padding:1.2rem;border:1px solid var(--border)">
+    <div style="font-weight:700;color:var(--dark);margin-bottom:0.8rem">📋 Your Order</div>`;
+  let subtotal = 0;
+  items.forEach(item => {
+    const price = parseInt(item.match(/₹(\d+)/)[1]);
+    subtotal += price;
+    html += `<div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:0.4rem;color:var(--text-muted)"><span>${item.replace(/₹\d+/, '')}</span><span style="font-weight:700;color:var(--dark)">₹${price}</span></div>`;
+  });
+  html += `<hr style="border:none;border-top:1px dashed #e2d5ca;margin:0.8rem 0">
+    <div style="display:flex;justify-content:space-between;font-weight:800;color:var(--dark)"><span>Subtotal</span><span style="color:var(--orange)">₹${subtotal}</span></div>
+  </div>`;
+  document.getElementById('orderReview').innerHTML = html;
+}
+
+function updateTotal() {
+  const items = [...document.querySelectorAll('.food-select-grid input:checked')];
+  let sub = 0;
+  items.forEach(i => { const m = i.value.match(/₹(\d+)/); if(m) sub += parseInt(m[1]); });
+  const gst = Math.round(sub * 0.05);
+  const total = sub + gst + 5;
+  document.getElementById('gstDisplay').textContent = '₹' + gst;
+  document.getElementById('totalDisplay').textContent = '₹' + total;
+}
+
+function applyPromo() {
+  const code = document.getElementById('promoCode').value.trim().toUpperCase();
+  if (code === 'FLAVOR10') alert('✅ Promo applied! 10% discount added.');
+  else if (code === 'FIRST50') alert('✅ ₹50 off on your first order!');
+  else alert('❌ Invalid promo code. Try FLAVOR10 or FIRST50.');
+}
+
+function placeOrder() {
+  const pay = document.getElementById('fpay').value;
+  if (!pay) { document.getElementById('fpayErr').textContent = 'Please select a payment method.'; return; }
+  document.getElementById('fpayErr').textContent = '';
+  document.getElementById('successOverlay').classList.add('show');
+}
+</script>
+</body>
+</html>

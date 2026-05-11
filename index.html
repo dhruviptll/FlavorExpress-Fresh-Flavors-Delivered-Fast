@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FlavorExpress – Fresh Flavors Delivered Fast</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── HERO ── */
+    .hero {
+      min-height: calc(100vh - 72px);
+      background: var(--cream);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: 4rem;
+      padding: 5rem 8%;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      background: radial-gradient(circle, rgba(232,97,10,0.08) 0%, transparent 70%);
+      top: -100px; right: -200px;
+      pointer-events: none;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1px solid var(--border);
+      padding: 0.45rem 1rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--orange);
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 14px rgba(232,97,10,0.08);
+    }
+    .hero-badge .dot {
+      width: 8px; height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse-dot 2s infinite;
+    }
+    @keyframes pulse-dot {
+      0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.4)}
+      50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 800;
+      color: var(--dark);
+      line-height: 1.1;
+      margin-bottom: 1.4rem;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--orange);
+      position: relative;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin-bottom: 2.2rem;
+      line-height: 1.7;
+    }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem; }
+    .hero-stats {
+      display: flex;
+      gap: 2rem;
+    }
+    .stat-item { text-align: left; }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: var(--dark);
+    }
+    .stat-label { font-size: 0.82rem; color: var(--text-muted); font-weight: 600; }
+
+    /* Hero image side */
+    .hero-visual {
+      position: relative;
+    }
+    .hero-img-wrap {
+      position: relative;
+      display: inline-block;
+    }
+    .hero-img-wrap img {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 32px;
+      object-fit: cover;
+      aspect-ratio: 4/3;
+      box-shadow: 0 40px 80px rgba(232,97,10,0.15), 0 0 0 8px rgba(232,97,10,0.08);
+      transform: rotate(2deg);
+      transition: transform 0.5s ease;
+    }
+    .hero-img-wrap:hover img { transform: rotate(0deg); }
+    .hero-float-card {
+      position: absolute;
+      background: white;
+      border-radius: 16px;
+      padding: 0.8rem 1.2rem;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      color: var(--dark);
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .hero-float-card.card-1 { bottom: -20px; left: -30px; animation-delay: 0s; }
+    .hero-float-card.card-2 { top: 20px; right: -30px; animation-delay: 1s; }
+    .float-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: grid; place-items: center;
+      font-size: 16px;
+    }
+    .float-icon.green { background: #dcfce7; }
+    .float-icon.orange { background: var(--orange-pale); }
+    .float-stars { color: #fbbf24; font-size: 0.75rem; }
+
+    /* ── CATEGORIES ── */
+    .categories { padding: 5rem 8%; background: white; }
+    .cat-grid {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .cat-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--orange-pale);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 0.65rem 1.4rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .cat-chip:hover, .cat-chip.active {
+      background: var(--orange);
+      color: white;
+      border-color: var(--orange);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(232,97,10,0.25);
+    }
+
+    /* ── FEATURES ── */
+    .features { padding: 6rem 8%; }
+    .features-header { text-align: center; margin-bottom: 4rem; }
+    .features-header .section-sub { margin: 0 auto; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    .feat-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2.2rem 1.8rem;
+      border: 1px solid #f0e8e0;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .feat-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 3px;
+      background: linear-gradient(90deg, var(--orange), var(--orange-light));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: var(--transition);
+    }
+    .feat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--border);
+    }
+    .feat-card:hover::after { transform: scaleX(1); }
+    .feat-icon {
+      width: 56px; height: 56px;
+      background: var(--orange-pale);
+      border-radius: 16px;
+      display: grid; place-items: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.4rem;
+    }
+    .feat-card h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 0.6rem;
+    }
+    .feat-card p { font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.5rem; }
+    .feat-link {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--orange);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: gap 0.2s;
+    }
+    .feat-link:hover { gap: 10px; }
+
+    /* ── HOW IT WORKS ── */
+    .how { padding: 6rem 8%; background: white; }
+    .how-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .how-steps { display: flex; flex-direction: column; gap: 1.5rem; }
+    .step-item {
+      display: flex;
+      gap: 1.2rem;
+      align-items: flex-start;
+      padding: 1.5rem;
+      border-radius: var(--radius);
+      transition: var(--transition);
+      cursor: default;
+    }
+    .step-item:hover { background: var(--orange-pale); }
+    .step-num {
+      width: 44px; height: 44px;
+      background: var(--orange);
+      color: white;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-weight: 800;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .step-body h4 { font-size: 1.05rem; font-weight: 700; color: var(--dark); margin-bottom: 0.3rem; }
+    .step-body p { font-size: 0.9rem; color: var(--text-muted); }
+    .how-image img {
+      width: 100%;
+      border-radius: var(--radius-lg);
+      object-fit: cover;
+      aspect-ratio: 1;
+      box-shadow: var(--shadow);
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials { padding: 6rem 8%; }
+    .testi-header { text-align: center; margin-bottom: 4rem; }
+    .testi-header .section-sub { margin: 0 auto; }
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+    .testi-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid #f0e8e0;
+      transition: var(--transition);
+      position: relative;
+    }
+    .testi-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-hover);
+      border-color: var(--border);
+    }
+    .testi-quote {
+      font-size: 2rem;
+      color: var(--orange);
+      font-family: 'Playfair Display', serif;
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .testi-text {
+      font-size: 0.95rem;
+      color: var(--text);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+    .testi-stars { color: #fbbf24; font-size: 0.85rem; margin-bottom: 1.2rem; }
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 1.2rem;
+      border-top: 1px solid #f0e8e0;
+    }
+    .testi-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--orange-pale);
+      display: grid; place-items: center;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--orange);
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+    }
+    .testi-name { font-weight: 700; font-size: 0.9rem; color: var(--dark); }
+    .testi-role { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* Happy customers banner */
+    .happy-banner {
+      padding: 4rem 8%;
+      background: linear-gradient(135deg, var(--dark) 0%, #2d1a0a 100%);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 3rem;
+      border-radius: 0;
+    }
+    .happy-text h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      font-weight: 800;
+      color: white;
+      line-height: 1.25;
+      margin-bottom: 0.8rem;
+    }
+    .happy-text p { color: #9a8878; font-size: 1rem; }
+    .happy-stats { display: flex; gap: 3rem; }
+    .h-stat { text-align: center; }
+    .h-stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--orange);
+    }
+    .h-stat-label { font-size: 0.82rem; color: #9a8878; font-weight: 600; white-space: nowrap; }
+
+    /* ── CTA ── */
+    .cta-section {
+      padding: 6rem 8%;
+      text-align: center;
+      background: white;
+    }
+    .cta-inner {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 1024px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+      .testi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; padding: 3rem 6%; gap: 2rem; }
+      .hero-visual { display: none; }
+      .how-inner { grid-template-columns: 1fr; }
+      .how-image { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
+      .happy-banner { grid-template-columns: 1fr; }
+      .happy-stats { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">
+    <div class="logo-icon">🍽️</div>
+    <span>FlavorExpress</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="restaurant.html">Menu</a></li>
+    <li><a href="tracking.html">Track</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="login.html" class="nav-cta">Sign In</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Now delivering in 200+ cities across India
+    </div>
+    <h1>Fresh <em>flavors</em><br>delivered to your door</h1>
+    <p>Discover the best local restaurants — from street-side snacks to gourmet platters. Order in one tap & track in real time.</p>
+    <div class="hero-btns">
+      <a href="restaurant.html" class="btn-primary">Explore Menu <i class="fas fa-arrow-right"></i></a>
+      <a href="order.html" class="btn-ghost">Order Now</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">50K+</div>
+        <div class="stat-label">Happy customers</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">200+</div>
+        <div class="stat-label">Restaurant partners</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">30 min</div>
+        <div class="stat-label">Avg. delivery</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-img-wrap">
+      <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Delicious food spread">
+      <div class="hero-float-card card-1">
+        <div class="float-icon green">✅</div>
+        <div>
+          <div>Order delivered!</div>
+          <div class="float-stars">★★★★★</div>
+        </div>
+      </div>
+      <div class="hero-float-card card-2">
+        <div class="float-icon orange">🛵</div>
+        <div>
+          <div>On the way</div>
+          <div style="font-size:0.78rem;color:var(--text-muted)">ETA: 12 mins</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOD CATEGORIES -->
+<section class="categories">
+  <div style="text-align:center;margin-bottom:2rem;">
+    <span class="section-eyebrow">Browse by taste</span>
+    <h2 class="section-title">What are you craving?</h2>
+  </div>
+  <div class="cat-grid">
+    <a href="restaurant.html" class="cat-chip">🍕 Pizza</a>
+    <a href="restaurant.html" class="cat-chip">🍔 Burgers</a>
+    <a href="restaurant.html" class="cat-chip active">🍛 Indian</a>
+    <a href="restaurant.html" class="cat-chip">🍜 Noodles</a>
+    <a href="restaurant.html" class="cat-chip">🥞 Breakfast</a>
+    <a href="restaurant.html" class="cat-chip">🎂 Desserts</a>
+    <a href="restaurant.html" class="cat-chip">🥗 Healthy</a>
+    <a href="restaurant.html" class="cat-chip">🌮 Street Food</a>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="features-header">
+    <span class="section-eyebrow">Everything you need</span>
+    <h2 class="section-title">Order. Track. Enjoy.</h2>
+    <p class="section-sub">From browsing menus to doorstep delivery — FlavorExpress handles every step of your food journey.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🍽️</div>
+      <h3>Restaurant Menu</h3>
+      <p>Browse full menus with HD photos, chef specials, and detailed ingredients for every item.</p>
+      <a href="restaurant.html" class="feat-link">Explore menu <i class="fas fa-arrow-right" style="font-size:0.75rem"></i></a>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🛵</div>
+      <h3>Live Order Tracking</h3>
+      <p>Step-by-step notifications from the kitchen to your door — always know where your food is.</p>
+      <a href="tracking.html" class="feat-link">Track demo <i class="fas fa-arrow-right" style="font-size:0.75rem"></i></a>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💳</div>
+      <h3>Secure Payments</h3>
+      <p>Pay with PhonePe, GPay, UPI, or cash on delivery. Multiple options, zero worries.</p>
+      <a href="payment.html" class="feat-link">Pay securely <i class="fas fa-arrow-right" style="font-size:0.75rem"></i></a>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🔔</div>
+      <h3>Fast Reorder</h3>
+      <p>Save your favorites, reorder in one tap, and get exclusive discounts as a member.</p>
+      <a href="order.html" class="feat-link">Order now <i class="fas fa-arrow-right" style="font-size:0.75rem"></i></a>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="how-inner">
+    <div>
+      <span class="section-eyebrow">Simple process</span>
+      <h2 class="section-title">Ordering takes just 3 easy steps</h2>
+      <p class="section-sub" style="margin-bottom:2.5rem">No fuss, no hassle. Your meal is just a few taps away.</p>
+      <div class="how-steps">
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h4>Browse & Choose</h4>
+            <p>Explore our curated restaurant partners and pick from hundreds of fresh dishes.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h4>Place Your Order</h4>
+            <p>Add items to your cart, choose your address, and check out securely in seconds.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h4>Enjoy Your Meal</h4>
+            <p>Sit back, track in real time, and get your meal delivered hot and fresh.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="how-image">
+      <img src="https://images.pexels.com/photos/3184193/pexels-photo-3184193.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Food delivery">
+    </div>
+  </div>
+</section>
+
+<!-- HAPPY CUSTOMERS BANNER -->
+<div class="happy-banner">
+  <div class="happy-text">
+    <h2>Loved by food lovers<br>across India 🇮🇳</h2>
+    <p>Thousands of satisfied customers order with us every day.</p>
+  </div>
+  <div class="happy-stats">
+    <div class="h-stat">
+      <div class="h-stat-num">50K+</div>
+      <div class="h-stat-label">Active Users</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num">4.8★</div>
+      <div class="h-stat-label">Avg. Rating</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num">98%</div>
+      <div class="h-stat-label">On-Time Delivery</div>
+    </div>
+    <div class="h-stat">
+      <div class="h-stat-num">200+</div>
+      <div class="h-stat-label">Restaurants</div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <div class="testi-header">
+    <span class="section-eyebrow">Happy customers</span>
+    <h2 class="section-title">What our foodies say</h2>
+    <p class="section-sub">Real reviews from real people who love great food delivered fast.</p>
+  </div>
+  <div class="testi-grid">
+
+    <div class="testi-card">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">The masala dosa arrived piping hot in under 25 minutes. I could not believe how fresh it tasted! FlavorExpress has completely changed how I order food.</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author">
+        <div class="testi-avatar">P</div>
+        <div>
+          <div class="testi-name">Priya Sharma</div>
+          <div class="testi-role">Regular customer · Ahmedabad</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">Ordered biryani for a family gathering — everything was perfect. The live tracking feature is a game changer! Will never use any other app again.</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author">
+        <div class="testi-avatar">R</div>
+        <div>
+          <div class="testi-name">Rahul Mehta</div>
+          <div class="testi-role">Foodie · Surat</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">As a college student, I order almost every day. The prices are great, the variety is amazing, and delivery is always on time. Highly recommended!</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author">
+        <div class="testi-avatar">A</div>
+        <div>
+          <div class="testi-name">Ananya Patel</div>
+          <div class="testi-role">Student · Vadodara</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">The UPI payment was instant and smooth. No hidden charges, no confusion. Clean interface and excellent customer service when I had a query.</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author">
+        <div class="testi-avatar">K</div>
+        <div>
+          <div class="testi-name">Karan Joshi</div>
+          <div class="testi-role">Business owner · Gandhinagar</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">I love how I can browse by cuisine. The filter options are fantastic, and the food photos are so accurate. What you see is exactly what you get!</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author">
+        <div class="testi-avatar">N</div>
+        <div>
+          <div class="testi-name">Neha Gupta</div>
+          <div class="testi-role">Food blogger · Mumbai</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testi-card">
+      <div class="testi-quote">"</div>
+      <p class="testi-text">Best food delivery app I've tried! Ordered vadapav and pav bhaji — arrived in 20 minutes, fresh and hot. The packaging was also eco-friendly. 🎉</p>
+      <div class="testi-stars">★★★★★</div>
+      <div class="testi-author">
+        <div class="testi-avatar">S</div>
+        <div>
+          <div class="testi-name">Suresh Patil</div>
+          <div class="testi-role">Working professional · Pune</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner">
+    <span class="section-eyebrow">Get started today</span>
+    <h2 class="section-title" style="text-align:center">Hungry? Let's fix that.</h2>
+    <p style="color:var(--text-muted);margin-bottom:2rem;font-size:1.05rem">Join 50,000+ food lovers who order with FlavorExpress every day.</p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
+      <a href="restaurant.html" class="btn-primary">Browse Restaurants <i class="fas fa-arrow-right"></i></a>
+      <a href="login.html" class="btn-ghost">Create Free Account</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand">
+      <a href="index.html" class="nav-logo" style="text-decoration:none">
+        <div class="logo-icon">🍽️</div>
+        <span>FlavorExpress</span>
+      </a>
+      <p>Your digital food hub — connecting hungry people with the best kitchens in town. Fresh flavors, delivered fast.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Explore</h4>
+      <ul>
+        <li><a href="restaurant.html">Restaurant Menu</a></li>
+        <li><a href="order.html">Order Online</a></li>
+        <li><a href="tracking.html">Track Order</a></li>
+        <li><a href="payment.html">Payment</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="about.html">About Us</a></li>
+        <li><a href="feedback.html">Feedback</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Partner with Us</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Support</h4>
+      <ul>
+        <li><a href="#">Help Center</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="login.html">Login / Register</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2026 FlavorExpress. All rights reserved. Made with ❤️ in India.</p>
+    <div class="footer-socials">
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-whatsapp"></i></a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

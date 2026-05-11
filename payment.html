@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment – FlavorExpress</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .payment-page {
+      min-height: calc(100vh - 72px);
+      background: linear-gradient(135deg, #fff4ec 0%, var(--cream) 100%);
+      padding: 4rem 5%;
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .payment-panel {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2.5rem;
+      border: 1px solid #f0e8e0;
+      box-shadow: var(--shadow);
+    }
+    .panel-header { margin-bottom: 2rem; }
+    .panel-header h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 800; color: var(--dark); }
+    .panel-header p { color: var(--text-muted); margin-top: 0.4rem; }
+
+    /* Security bar */
+    .security-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 2rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #15803d;
+    }
+
+    /* Payment methods */
+    .method-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 0.8rem;
+    }
+    .method-grid { display: flex; flex-direction: column; gap: 0.7rem; margin-bottom: 2rem; }
+    .method-option {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 1.2rem;
+      border: 2px solid #eee;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    .method-option:hover { border-color: var(--orange); background: var(--orange-pale); }
+    .method-option.selected { border-color: var(--orange); background: var(--orange-pale); }
+    .method-icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      display: grid; place-items: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .method-icon.phonepe { background: #4c1d95; }
+    .method-icon.gpay { background: #1a73e8; }
+    .method-icon.upi { background: #007bff; }
+    .method-icon.cod { background: #16a34a; }
+    .method-icon.card { background: #dc2626; }
+    .method-info { flex: 1; }
+    .method-info strong { display: block; font-size: 0.95rem; color: var(--dark); }
+    .method-info span { font-size: 0.8rem; color: var(--text-muted); }
+    .method-radio {
+      width: 20px; height: 20px;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+    .method-option.selected .method-radio {
+      border-color: var(--orange);
+      background: var(--orange);
+    }
+    .method-option.selected .method-radio::after {
+      content: '';
+      width: 8px; height: 8px;
+      background: white;
+      border-radius: 50%;
+    }
+    .popular-badge {
+      position: absolute;
+      top: -8px; right: 12px;
+      background: var(--orange);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: 0.5px;
+    }
+
+    /* UPI input expandable */
+    .upi-expand {
+      display: none;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border);
+    }
+    .upi-expand.show { display: block; }
+
+    /* Card form */
+    .card-expand {
+      display: none;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border);
+    }
+    .card-expand.show { display: block; }
+    .card-number-input {
+      position: relative;
+    }
+    .card-number-input input { padding-right: 3rem; }
+    .card-type-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.4rem;
+    }
+    .card-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+    .pay-btn {
+      width: 100%;
+      padding: 1rem;
+      background: var(--orange);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 8px 20px rgba(232,97,10,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 1.5rem;
+    }
+    .pay-btn:hover { background: #c94f00; transform: translateY(-2px); box-shadow: 0 14px 28px rgba(232,97,10,0.35); }
+
+    /* Right: order summary */
+    .order-summary-panel { display: flex; flex-direction: column; gap: 1.5rem; }
+    .summary-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid #f0e8e0;
+      box-shadow: var(--shadow);
+    }
+    .summary-box h3 { font-size: 1rem; font-weight: 700; color: var(--dark); margin-bottom: 1.2rem; padding-bottom: 0.8rem; border-bottom: 1px solid #f0e8e0; }
+    .s-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.7rem; font-size: 0.9rem; }
+    .s-item .s-name { display: flex; gap: 8px; align-items: center; color: var(--text-muted); }
+    .s-item .s-price { font-weight: 700; color: var(--dark); }
+    .s-divider { border: none; border-top: 1px dashed #f0e8e0; margin: 0.8rem 0; }
+    .s-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 1.05rem; }
+    .s-total .t-price { color: var(--orange); }
+
+    /* Success modal */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 2000;
+      place-items: center;
+    }
+    .success-overlay.show { display: grid; }
+    .success-box {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 3rem 2.5rem;
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes pop { from{transform:scale(0.7);opacity:0} to{transform:scale(1);opacity:1} }
+    .success-icon { font-size: 4.5rem; margin-bottom: 1rem; }
+    .success-box h2 { font-family: 'Playfair Display', serif; font-size: 2rem; color: var(--dark); margin-bottom: 0.6rem; }
+    .success-box p { color: var(--text-muted); margin-bottom: 0.5rem; font-size: 0.95rem; }
+    .success-order-id { display: inline-block; background: var(--orange-pale); color: var(--orange); padding: 0.4rem 1rem; border-radius: 30px; font-weight: 700; font-size: 0.9rem; margin-bottom: 1.5rem; border: 1px solid var(--border); }
+    .success-actions { display: flex; flex-direction: column; gap: 0.8rem; }
+
+    @media(max-width:900px){ .payment-page{grid-template-columns:1fr;} }
+    @media(max-width:480px){ .card-row{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo"><div class="logo-icon">🍽️</div><span>FlavorExpress</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="about.html">About</a></li>
+    <li><a href="restaurant.html">Menu</a></li>
+    <li><a href="tracking.html">Track</a></li>
+    <li><a href="feedback.html">Feedback</a></li>
+    <li><a href="login.html" class="nav-cta">Sign In</a></li>
+  </ul>
+</nav>
+
+<div class="payment-page">
+
+  <!-- LEFT: Payment form -->
+  <div class="payment-panel">
+    <div class="panel-header">
+      <h2>Secure Checkout</h2>
+      <p>Choose how you'd like to pay for your order.</p>
+    </div>
+
+    <div class="security-bar">
+      <i class="fas fa-lock"></i>
+      256-bit SSL encrypted · Your payment info is always safe
+    </div>
+
+    <div class="method-title">Digital Payments</div>
+    <div class="method-grid">
+
+      <div class="method-option" onclick="selectMethod(this,'phonepe')">
+        <div class="method-icon phonepe">📱</div>
+        <div class="method-info"><strong>PhonePe</strong><span>Pay via PhonePe UPI</span></div>
+        <div class="method-radio"></div>
+        <div class="popular-badge">POPULAR</div>
+      </div>
+
+      <div class="method-option" onclick="selectMethod(this,'gpay')">
+        <div class="method-icon gpay">💳</div>
+        <div class="method-info"><strong>Google Pay</strong><span>Pay via Google Pay</span></div>
+        <div class="method-radio"></div>
+      </div>
+
+      <div class="method-option" onclick="selectMethod(this,'upi')">
+        <div class="method-icon upi">🏦</div>
+        <div class="method-info">
+          <strong>UPI ID</strong><span>Enter your UPI ID manually</span>
+          <div class="upi-expand" id="upiExpand">
+            <div class="form-group" style="margin-top:0.8rem">
+              <label>UPI ID</label>
+              <input type="text" id="upiId" placeholder="yourname@upi">
+              <span class="error-msg" id="upiErr"></span>
+            </div>
+          </div>
+        </div>
+        <div class="method-radio"></div>
+      </div>
+
+      <div class="method-option" onclick="selectMethod(this,'card')">
+        <div class="method-icon card">💳</div>
+        <div class="method-info">
+          <strong>Debit / Credit Card</strong><span>Visa, Mastercard, RuPay</span>
+          <div class="card-expand" id="cardExpand">
+            <div class="form-group" style="margin-top:0.8rem">
+              <label>Card Number</label>
+              <div class="card-number-input">
+                <input type="text" id="cardNum" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCard(this)">
+                <span class="card-type-icon" id="cardTypeIcon">💳</span>
+              </div>
+              <span class="error-msg" id="cardNumErr"></span>
+            </div>
+            <div class="card-row">
+              <div class="form-group">
+                <label>Expiry Date</label>
+                <input type="text" id="cardExp" placeholder="MM / YY" maxlength="7" oninput="formatExpiry(this)">
+                <span class="error-msg" id="cardExpErr"></span>
+              </div>
+              <div class="form-group">
+                <label>CVV</label>
+                <input type="password" id="cardCvv" placeholder="•••" maxlength="3">
+                <span class="error-msg" id="cardCvvErr"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Name on Card</label>
+              <input type="text" id="cardName" placeholder="PRIYA SHARMA">
+            </div>
+          </div>
+        </div>
+        <div class="method-radio"></div>
+      </div>
+
+    </div>
+
+    <div class="method-title">Offline Payments</div>
+    <div class="method-grid">
+      <div class="method-option" onclick="selectMethod(this,'cod')">
+        <div class="method-icon cod">🚚</div>
+        <div class="method-info"><strong>Cash on Delivery</strong><span>Pay when your order arrives</span></div>
+        <div class="method-radio"></div>
+      </div>
+    </div>
+
+    <button class="pay-btn" onclick="processPayment()">
+      <i class="fas fa-lock"></i>
+      Pay ₹412 Securely
+    </button>
+    <p style="text-align:center;font-size:0.78rem;color:var(--text-muted);margin-top:0.8rem">
+      By paying, you agree to our <a href="#" style="color:var(--orange)">Terms of Service</a>
+    </p>
+  </div>
+
+  <!-- RIGHT: Summary -->
+  <div class="order-summary-panel">
+
+    <div class="summary-box">
+      <h3>📋 Order Summary</h3>
+      <div class="s-item"><span class="s-name">🍕 Margherita Pizza</span><span class="s-price">₹199</span></div>
+      <div class="s-item"><span class="s-name">🍔 Classic Burger</span><span class="s-price">₹99</span></div>
+      <div class="s-item"><span class="s-name">🍟 French Fries</span><span class="s-price">₹99</span></div>
+      <hr class="s-divider">
+      <div class="s-item"><span class="s-name">Subtotal</span><span class="s-price">₹397</span></div>
+      <div class="s-item"><span class="s-name">Delivery fee</span><span class="s-price" style="color:#16a34a">FREE</span></div>
+      <div class="s-item"><span class="s-name">GST (5%)</span><span class="s-price">₹10</span></div>
+      <div class="s-item"><span class="s-name">Platform fee</span><span class="s-price">₹5</span></div>
+      <hr class="s-divider">
+      <div class="s-total"><span>Total</span><span class="t-price">₹412</span></div>
+    </div>
+
+    <div class="summary-box">
+      <h3>📍 Deliver to</h3>
+      <div style="font-size:0.9rem;color:var(--text-muted);line-height:1.7">
+        <strong style="color:var(--dark)">Priya Sharma</strong><br>
+        Flat 4B, Sunrise Apartments,<br>
+        Ring Road, Ahmedabad – 380001<br>
+        <span style="color:var(--orange);font-weight:700">+91 98765 43210</span>
+      </div>
+    </div>
+
+    <div class="summary-box" style="background:var(--dark);border-color:transparent">
+      <h3 style="color:white">🎁 Savings</h3>
+      <div style="display:flex;flex-direction:column;gap:0.5rem">
+        <div style="font-size:0.88rem;color:#9a8878">🚚 Free delivery saved</div>
+        <div style="font-size:1.1rem;font-weight:800;color:var(--orange)">₹49 saved on this order!</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon">✅</div>
+    <h2>Payment Successful!</h2>
+    <p>Your order has been confirmed and is now being prepared.</p>
+    <div class="success-order-id">Order #FE-20241</div>
+    <div class="success-actions">
+      <a href="tracking.html" class="btn-primary" style="justify-content:center">
+        Track My Order <i class="fas fa-arrow-right"></i>
+      </a>
+      <a href="index.html" style="font-size:0.9rem;color:var(--text-muted);text-decoration:none;text-align:center">← Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-top">
+    <div class="footer-brand"><a href="index.html" class="nav-logo"><div class="logo-icon">🍽️</div><span>FlavorExpress</span></a><p>Fresh flavors, delivered fast.</p></div>
+    <div class="footer-col"><h4>Quick Links</h4><ul><li><a href="index.html">Home</a></li><li><a href="restaurant.html">Menu</a></li><li><a href="order.html">Order</a></li></ul></div>
+    <div class="footer-col"><h4>Support</h4><ul><li><a href="tracking.html">Track</a></li><li><a href="feedback.html">Feedback</a></li></ul></div>
+    <div class="footer-col"><h4>Account</h4><ul><li><a href="login.html">Login</a></li></ul></div>
+  </div>
+  <div class="footer-bottom"><p>© 2026 FlavorExpress. All rights reserved.</p></div>
+</footer>
+
+<script>
+let selectedMethod = '';
+
+function selectMethod(el, method) {
+  document.querySelectorAll('.method-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedMethod = method;
+  // hide all expandable
+  document.getElementById('upiExpand').classList.remove('show');
+  document.getElementById('cardExpand').classList.remove('show');
+  if (method === 'upi') document.getElementById('upiExpand').classList.add('show');
+  if (method === 'card') document.getElementById('cardExpand').classList.add('show');
+}
+
+function formatCard(input) {
+  let val = input.value.replace(/\D/g, '').substring(0, 16);
+  input.value = val.replace(/(.{4})/g, '$1 ').trim();
+  const icon = document.getElementById('cardTypeIcon');
+  if (val.startsWith('4')) icon.textContent = '💳';
+  else if (val.startsWith('5')) icon.textContent = '🔴';
+  else if (val.startsWith('6')) icon.textContent = '🏦';
+  else icon.textContent = '💳';
+}
+
+function formatExpiry(input) {
+  let val = input.value.replace(/\D/g, '');
+  if (val.length >= 2) val = val.substring(0,2) + ' / ' + val.substring(2,4);
+  input.value = val;
+}
+
+function processPayment() {
+  if (!selectedMethod) { alert('Please select a payment method.'); return; }
+
+  if (selectedMethod === 'upi') {
+    const upi = document.getElementById('upiId').value.trim();
+    if (!upi.includes('@')) { document.getElementById('upiErr').textContent = 'Enter a valid UPI ID (e.g. name@upi)'; return; }
+    document.getElementById('upiErr').textContent = '';
+  }
+
+  if (selectedMethod === 'card') {
+    const num = document.getElementById('cardNum').value.replace(/\s/g,'');
+    const exp = document.getElementById('cardExp').value;
+    const cvv = document.getElementById('cardCvv').value;
+    let ok = true;
+    if (num.length < 16) { document.getElementById('cardNumErr').textContent = 'Enter valid 16-digit card number.'; ok = false; }
+    else document.getElementById('cardNumErr').textContent = '';
+    if (exp.length < 7) { document.getElementById('cardExpErr').textContent = 'Enter valid expiry date.'; ok = false; }
+    else document.getElementById('cardExpErr').textContent = '';
+    if (cvv.length < 3) { document.getElementById('cardCvvErr').textContent = 'Enter 3-digit CVV.'; ok = false; }
+    else document.getElementById('cardCvvErr').textContent = '';
+    if (!ok) return;
+  }
+
+  document.getElementById('successOverlay').classList.add('show');
+}
+</script>
+</body>
+</html>
